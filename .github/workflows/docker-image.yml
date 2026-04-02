@@ -1,0 +1,47 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ["main", "*"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USER }}/core-users:${{ github.sha }}
+
+  build-and-update:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docker login
+        run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USER }}/core-users:${{ github.sha }}
+      - name: Docker Push
+        run: |
+          docker push ${{ secrets.DOCKER_USER }}/core-users:${{ github.sha }}
+          docker tag ${{ secrets.DOCKER_USER }}/core-users:${{ github.sha }} ${{ secrets.DOCKER_USER }}/core-users:latest
+          docker push ${{ secrets.DOCKER_USER }}/core-users:latest
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build-and-update
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            cd /root/zdravoshag/infra
+            docker compose pull core-users
+            docker compose up -d core-users

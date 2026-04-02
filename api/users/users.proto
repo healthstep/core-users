@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package users;
+
+option go_package = "github.com/helthtech/core-users/pkg/proto/users";
+
+import "google/protobuf/timestamp.proto";
+
+service UserService {
+  rpc PrepareAuth(PrepareAuthRequest) returns (PrepareAuthResponse);
+  rpc ResolveAuthKey(ResolveAuthKeyRequest) returns (ResolveAuthKeyResponse);
+  rpc CreateProvisionalUser(CreateProvisionalUserRequest) returns (CreateProvisionalUserResponse);
+  rpc VerifyPhone(VerifyPhoneRequest) returns (VerifyPhoneResponse);
+  rpc GetUser(GetUserRequest) returns (UserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UserResponse);
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  rpc CheckProvisionalOrphans(CheckProvisionalOrphansRequest) returns (CheckProvisionalOrphansResponse);
+  rpc DeleteProvisionalUser(DeleteProvisionalUserRequest) returns (DeleteProvisionalUserResponse);
+}
+
+message PrepareAuthRequest {}
+
+message PrepareAuthResponse {
+  string key = 1;
+}
+
+message ResolveAuthKeyRequest {
+  string key = 1;
+}
+
+message ResolveAuthKeyResponse {
+  bool valid = 1;
+  string provisional_user_id = 2;
+}
+
+message CreateProvisionalUserRequest {}
+
+message CreateProvisionalUserResponse {
+  string id = 1;
+}
+
+message VerifyPhoneRequest {
+  string phone_e164 = 1;
+  string provisional_user_id = 2;
+  string auth_key = 3;
+  string platform = 4;
+}
+
+message VerifyPhoneResponse {
+  string user_id = 1;
+  string token = 2;
+  bool is_new_user = 3;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message UpdateUserRequest {
+  string user_id = 1;
+  optional string display_name = 2;
+  optional string locale = 3;
+  optional string timezone = 4;
+  optional string birth_date = 5;
+  optional string sex = 6;
+  optional bool onboarding_completed = 7;
+}
+
+message UserResponse {
+  string id = 1;
+  string phone_e164 = 2;
+  google.protobuf.Timestamp phone_verified_at = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  optional google.protobuf.Timestamp onboarding_completed_at = 6;
+  string locale = 7;
+  string timezone = 8;
+  string display_name = 9;
+  string birth_date = 10;
+  string sex = 11;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  string user_id = 2;
+  string user_type = 3;
+}
+
+message CheckProvisionalOrphansRequest {
+  string provisional_user_id = 1;
+}
+
+message CheckProvisionalOrphansResponse {
+  bool is_orphan = 1;
+}
+
+message DeleteProvisionalUserRequest {
+  string provisional_user_id = 1;
+}
+
+message DeleteProvisionalUserResponse {}

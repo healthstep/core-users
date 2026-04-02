@@ -1,0 +1,18 @@
+grpc_port: "5001"
+server_port: "9001"
+close_timeout: "5s"
+
+db_dsn: "host=localhost user=zdravoshag password=zdravoshag_secret dbname=zdravoshag search_path=core_users sslmode=disable"
+
+redis_addr: "localhost:6379"
+redis_password: "redis_secret"
+
+nats_url: "nats://localhost:4222"
+
+tracer_host: "localhost"
+tracer_port: "4317"
+service_name: "core-users"
+
+jwt_secret: "change-me-to-a-long-random-string"
+auth_key_ttl: "300s"
+token_ttl: "24h"
