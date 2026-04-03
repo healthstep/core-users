@@ -36,7 +36,15 @@ func (s *UserServer) ResolveAuthKey(ctx context.Context, req *pb.ResolveAuthKeyR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "resolve auth key: %v", err)
 	}
-	return &pb.ResolveAuthKeyResponse{Valid: valid}, nil
+	if !valid {
+		return &pb.ResolveAuthKeyResponse{Valid: false}, nil
+	}
+
+	pu, err := s.authSvc.CreateProvisionalUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "create provisional user: %v", err)
+	}
+	return &pb.ResolveAuthKeyResponse{Valid: true, ProvisionalUserId: pu.ID.String()}, nil
 }
 
 func (s *UserServer) CreateProvisionalUser(ctx context.Context, _ *pb.CreateProvisionalUserRequest) (*pb.CreateProvisionalUserResponse, error) {
