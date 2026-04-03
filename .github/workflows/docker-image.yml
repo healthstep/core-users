@@ -42,6 +42,6 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            cd /root/zdravoshag/infra
+            cd /root/healthstep/infra
             docker compose pull core-users
             docker compose up -d core-users
