@@ -555,6 +555,7 @@ type UserResponse struct {
 	DisplayName           string                 `protobuf:"bytes,9,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	BirthDate             string                 `protobuf:"bytes,10,opt,name=birth_date,json=birthDate,proto3" json:"birth_date,omitempty"`
 	Sex                   string                 `protobuf:"bytes,11,opt,name=sex,proto3" json:"sex,omitempty"`
+	IsAdmin               bool                   `protobuf:"varint,12,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -664,6 +665,13 @@ func (x *UserResponse) GetSex() string {
 		return x.Sex
 	}
 	return ""
+}
+
+func (x *UserResponse) GetIsAdmin() bool {
+	if x != nil {
+		return x.IsAdmin
+	}
+	return false
 }
 
 type ValidateTokenRequest struct {
@@ -980,7 +988,7 @@ const file_users_proto_rawDesc = "" +
 	"\t_timezoneB\r\n" +
 	"\v_birth_dateB\x06\n" +
 	"\x04_sexB\x17\n" +
-	"\x15_onboarding_completed\"\xf8\x03\n" +
+	"\x15_onboarding_completed\"\x93\x04\n" +
 	"\fUserResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
@@ -997,7 +1005,8 @@ const file_users_proto_rawDesc = "" +
 	"\n" +
 	"birth_date\x18\n" +
 	" \x01(\tR\tbirthDate\x12\x10\n" +
-	"\x03sex\x18\v \x01(\tR\x03sexB\x1a\n" +
+	"\x03sex\x18\v \x01(\tR\x03sex\x12\x19\n" +
+	"\bis_admin\x18\f \x01(\bR\aisAdminB\x1a\n" +
 	"\x18_onboarding_completed_at\",\n" +
 	"\x14ValidateTokenRequest\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\"c\n" +

@@ -153,6 +153,7 @@ func modelUserToProto(u *model.User) *pb.UserResponse {
 		DisplayName: u.DisplayName,
 		BirthDate:   u.BirthDate,
 		Sex:         u.Sex,
+		IsAdmin:     u.IsAdmin,
 	}
 	if u.PhoneVerifiedAt != nil {
 		resp.PhoneVerifiedAt = timestamppb.New(*u.PhoneVerifiedAt)

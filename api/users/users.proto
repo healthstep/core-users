@@ -78,6 +78,7 @@ message UserResponse {
   string display_name = 9;
   string birth_date = 10;
   string sex = 11;
+  bool is_admin = 12;
 }
 
 message ValidateTokenRequest {

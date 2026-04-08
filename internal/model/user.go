@@ -26,6 +26,7 @@ type User struct {
 	DisplayName           string     `gorm:"type:text"`
 	BirthDate             string     `gorm:"type:text"`
 	Sex                   string     `gorm:"type:text"`
+	IsAdmin               bool       `gorm:"type:boolean;not null;default:false"`
 }
 
 func (User) TableName() string { return "users" }
