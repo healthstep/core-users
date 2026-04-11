@@ -203,6 +203,9 @@ func splitOnce(s, sep string) [2]string {
 }
 
 func (s *AuthService) publishAuthToken(key, token, userID string) {
+	if s.nc == nil {
+		return
+	}
 	msg := AuthTokenMessage{Key: key, Token: token, UserID: userID}
 	data, err := json.Marshal(msg)
 	if err != nil {
