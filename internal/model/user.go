@@ -18,6 +18,7 @@ type User struct {
 	ID                    uuid.UUID  `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
 	PhoneE164             string     `gorm:"uniqueIndex;type:text;not null"`
 	PhoneVerifiedAt       *time.Time `gorm:"type:timestamptz"`
+	PasswordHash          *string    `gorm:"type:text"`
 	CreatedAt             time.Time
 	UpdatedAt             time.Time
 	OnboardingCompletedAt *time.Time `gorm:"type:timestamptz"`

@@ -16,6 +16,9 @@ service UserService {
   rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
   rpc CheckProvisionalOrphans(CheckProvisionalOrphansRequest) returns (CheckProvisionalOrphansResponse);
   rpc DeleteProvisionalUser(DeleteProvisionalUserRequest) returns (DeleteProvisionalUserResponse);
+  rpc CheckAuthToken(CheckAuthTokenRequest) returns (CheckAuthTokenResponse);
+  rpc LoginWithPassword(LoginWithPasswordRequest) returns (LoginWithPasswordResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
 }
 
 message PrepareAuthRequest {}
@@ -50,6 +53,35 @@ message VerifyPhoneResponse {
   string user_id = 1;
   string token = 2;
   bool is_new_user = 3;
+  string initial_password = 4;
+}
+
+message CheckAuthTokenRequest {
+  string key = 1;
+}
+
+message CheckAuthTokenResponse {
+  string token = 1;
+  string user_id = 2;
+}
+
+message LoginWithPasswordRequest {
+  string phone_e164 = 1;
+  string password = 2;
+}
+
+message LoginWithPasswordResponse {
+  string token = 1;
+  string user_id = 2;
+}
+
+message ChangePasswordRequest {
+  string user_id = 1;
+  string new_password = 2;
+}
+
+message ChangePasswordResponse {
+  bool success = 1;
 }
 
 message GetUserRequest {

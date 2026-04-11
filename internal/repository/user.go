@@ -54,3 +54,7 @@ func (r *UserRepository) GetSessionByTokenHash(ctx context.Context, hash string)
 	err := r.db.WithContext(ctx).Where("token_hash = ? AND revoked_at IS NULL", hash).First(&s).Error
 	return &s, err
 }
+
+func (r *UserRepository) UpdateUserFields(ctx context.Context, id uuid.UUID, fields map[string]any) error {
+	return r.db.WithContext(ctx).Model(&model.User{}).Where("id = ?", id).Updates(fields).Error
+}

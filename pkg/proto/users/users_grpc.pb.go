@@ -28,6 +28,9 @@ const (
 	UserService_ValidateToken_FullMethodName           = "/users.UserService/ValidateToken"
 	UserService_CheckProvisionalOrphans_FullMethodName = "/users.UserService/CheckProvisionalOrphans"
 	UserService_DeleteProvisionalUser_FullMethodName   = "/users.UserService/DeleteProvisionalUser"
+	UserService_CheckAuthToken_FullMethodName          = "/users.UserService/CheckAuthToken"
+	UserService_LoginWithPassword_FullMethodName       = "/users.UserService/LoginWithPassword"
+	UserService_ChangePassword_FullMethodName          = "/users.UserService/ChangePassword"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -43,6 +46,9 @@ type UserServiceClient interface {
 	ValidateToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
 	CheckProvisionalOrphans(ctx context.Context, in *CheckProvisionalOrphansRequest, opts ...grpc.CallOption) (*CheckProvisionalOrphansResponse, error)
 	DeleteProvisionalUser(ctx context.Context, in *DeleteProvisionalUserRequest, opts ...grpc.CallOption) (*DeleteProvisionalUserResponse, error)
+	CheckAuthToken(ctx context.Context, in *CheckAuthTokenRequest, opts ...grpc.CallOption) (*CheckAuthTokenResponse, error)
+	LoginWithPassword(ctx context.Context, in *LoginWithPasswordRequest, opts ...grpc.CallOption) (*LoginWithPasswordResponse, error)
+	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error)
 }
 
 type userServiceClient struct {
@@ -143,6 +149,36 @@ func (c *userServiceClient) DeleteProvisionalUser(ctx context.Context, in *Delet
 	return out, nil
 }
 
+func (c *userServiceClient) CheckAuthToken(ctx context.Context, in *CheckAuthTokenRequest, opts ...grpc.CallOption) (*CheckAuthTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckAuthTokenResponse)
+	err := c.cc.Invoke(ctx, UserService_CheckAuthToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) LoginWithPassword(ctx context.Context, in *LoginWithPasswordRequest, opts ...grpc.CallOption) (*LoginWithPasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginWithPasswordResponse)
+	err := c.cc.Invoke(ctx, UserService_LoginWithPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChangePasswordResponse)
+	err := c.cc.Invoke(ctx, UserService_ChangePassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -156,6 +192,9 @@ type UserServiceServer interface {
 	ValidateToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
 	CheckProvisionalOrphans(context.Context, *CheckProvisionalOrphansRequest) (*CheckProvisionalOrphansResponse, error)
 	DeleteProvisionalUser(context.Context, *DeleteProvisionalUserRequest) (*DeleteProvisionalUserResponse, error)
+	CheckAuthToken(context.Context, *CheckAuthTokenRequest) (*CheckAuthTokenResponse, error)
+	LoginWithPassword(context.Context, *LoginWithPasswordRequest) (*LoginWithPasswordResponse, error)
+	ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -192,6 +231,15 @@ func (UnimplementedUserServiceServer) CheckProvisionalOrphans(context.Context, *
 }
 func (UnimplementedUserServiceServer) DeleteProvisionalUser(context.Context, *DeleteProvisionalUserRequest) (*DeleteProvisionalUserResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteProvisionalUser not implemented")
+}
+func (UnimplementedUserServiceServer) CheckAuthToken(context.Context, *CheckAuthTokenRequest) (*CheckAuthTokenResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CheckAuthToken not implemented")
+}
+func (UnimplementedUserServiceServer) LoginWithPassword(context.Context, *LoginWithPasswordRequest) (*LoginWithPasswordResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method LoginWithPassword not implemented")
+}
+func (UnimplementedUserServiceServer) ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ChangePassword not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -376,6 +424,60 @@ func _UserService_DeleteProvisionalUser_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_CheckAuthToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckAuthTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CheckAuthToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CheckAuthToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CheckAuthToken(ctx, req.(*CheckAuthTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_LoginWithPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginWithPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).LoginWithPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_LoginWithPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).LoginWithPassword(ctx, req.(*LoginWithPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ChangePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ChangePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ChangePassword(ctx, req.(*ChangePasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -418,6 +520,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteProvisionalUser",
 			Handler:    _UserService_DeleteProvisionalUser_Handler,
+		},
+		{
+			MethodName: "CheckAuthToken",
+			Handler:    _UserService_CheckAuthToken_Handler,
+		},
+		{
+			MethodName: "LoginWithPassword",
+			Handler:    _UserService_LoginWithPassword_Handler,
+		},
+		{
+			MethodName: "ChangePassword",
+			Handler:    _UserService_ChangePassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

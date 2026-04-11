@@ -65,15 +65,43 @@ func (s *UserServer) VerifyPhone(ctx context.Context, req *pb.VerifyPhoneRequest
 		}
 	}
 
-	userID, token, isNew, err := s.authSvc.VerifyPhone(ctx, req.PhoneE164, provisionalID, req.AuthKey)
+	userID, token, initialPassword, isNew, err := s.authSvc.VerifyPhone(ctx, req.PhoneE164, provisionalID, req.AuthKey)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "verify phone: %v", err)
 	}
 	return &pb.VerifyPhoneResponse{
-		UserId:    userID.String(),
-		Token:     token,
-		IsNewUser: isNew,
+		UserId:          userID.String(),
+		Token:           token,
+		IsNewUser:       isNew,
+		InitialPassword: initialPassword,
 	}, nil
+}
+
+func (s *UserServer) CheckAuthToken(ctx context.Context, req *pb.CheckAuthTokenRequest) (*pb.CheckAuthTokenResponse, error) {
+	token, userID, err := s.authSvc.CheckAuthToken(ctx, req.Key)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "check auth token: %v", err)
+	}
+	return &pb.CheckAuthTokenResponse{Token: token, UserId: userID}, nil
+}
+
+func (s *UserServer) LoginWithPassword(ctx context.Context, req *pb.LoginWithPasswordRequest) (*pb.LoginWithPasswordResponse, error) {
+	userID, token, err := s.authSvc.LoginWithPassword(ctx, req.PhoneE164, req.Password)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "invalid credentials")
+	}
+	return &pb.LoginWithPasswordResponse{Token: token, UserId: userID.String()}, nil
+}
+
+func (s *UserServer) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
+	uid, err := uuid.Parse(req.UserId)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user_id")
+	}
+	if err := s.authSvc.ChangePassword(ctx, uid, req.NewPassword); err != nil {
+		return nil, status.Errorf(codes.Internal, "change password: %v", err)
+	}
+	return &pb.ChangePasswordResponse{Success: true}, nil
 }
 
 func (s *UserServer) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.UserResponse, error) {
