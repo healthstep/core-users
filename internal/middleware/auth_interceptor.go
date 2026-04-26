@@ -2,9 +2,11 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/helthtech/core-users/internal/service"
+	"github.com/porebric/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -41,6 +43,7 @@ func AuthUnaryInterceptor(jwtSvc *service.JWTService) grpc.UnaryServerIntercepto
 
 		claims, err := jwtSvc.Validate(token)
 		if err != nil {
+			logger.Error(ctx, err, "grpc auth: invalid token", "method", info.FullMethod)
 			return nil, status.Errorf(codes.Unauthenticated, "invalid token")
 		}
 
@@ -54,6 +57,7 @@ func PanicRecoveryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 		defer func() {
 			if r := recover(); r != nil {
+				logger.Error(ctx, fmt.Errorf("grpc panic: %v", r), "grpc panic", "method", info.FullMethod, "recovered", r)
 				err = status.Errorf(codes.Internal, "panic: %v", r)
 			}
 		}()

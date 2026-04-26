@@ -3,18 +3,19 @@ package boot
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 	"time"
 
 	"github.com/helthtech/core-users/internal/middleware"
 	"github.com/helthtech/core-users/internal/migration"
+	"github.com/helthtech/core-users/internal/obs"
 	"github.com/helthtech/core-users/internal/repository"
 	"github.com/helthtech/core-users/internal/server"
 	"github.com/helthtech/core-users/internal/service"
 	pb "github.com/helthtech/core-users/pkg/proto/users"
 	"github.com/nats-io/nats.go"
 	"github.com/porebric/configs"
+	"github.com/porebric/logger"
 	"github.com/porebric/resty"
 	"github.com/redis/go-redis/v9"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -26,7 +27,7 @@ import (
 	"google.golang.org/grpc"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	gormlog "gorm.io/gorm/logger"
 )
 
 func Run(ctx context.Context) error {
@@ -46,7 +47,7 @@ func Run(ctx context.Context) error {
 
 	tp, err := initTracer(ctx)
 	if err != nil {
-		log.Printf("tracer init failed (non-fatal): %v", err)
+		obs.BG("tracer").Error(err, "tracer init failed (non-fatal)")
 	} else {
 		otel.SetTracerProvider(tp)
 		defer func() { _ = tp.Shutdown(context.Background()) }()
@@ -69,6 +70,7 @@ func Run(ctx context.Context) error {
 
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
+			middleware.GRPCUnaryAccessLog(),
 			middleware.PanicRecoveryInterceptor(),
 			middleware.AuthUnaryInterceptor(jwtSvc),
 		),
@@ -83,13 +85,13 @@ func Run(ctx context.Context) error {
 	}
 
 	go func() {
-		log.Printf("gRPC server listening on :%s", grpcPort)
+		obs.L.Info("gRPC server listening", "addr", grpcPort)
 		if err := grpcServer.Serve(lis); err != nil {
-			log.Printf("gRPC serve error: %v", err)
+			obs.L.Error(err, "gRPC serve error")
 		}
 	}()
 
-	router := resty.NewRouter(nil, nil)
+	router := resty.NewRouter(func() *logger.Logger { return obs.L }, nil)
 	resty.RunServer(ctx, router, func(ctx context.Context) error {
 		grpcServer.GracefulStop()
 		nc.Close()
@@ -102,7 +104,7 @@ func Run(ctx context.Context) error {
 func initDB(ctx context.Context) (*gorm.DB, error) {
 	dsn := configs.Value(ctx, "db_dsn").String()
 	return gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Warn),
+		Logger: gormlog.Default.LogMode(gormlog.Warn),
 	})
 }
 
