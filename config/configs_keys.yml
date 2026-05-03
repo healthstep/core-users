@@ -1,0 +1,53 @@
+config:
+  grpc_port:
+    type: string
+    default: "5001"
+    source: yaml
+  server_port:
+    type: int
+    default: "9001"
+    source: yaml
+  close_timeout:
+    type: duration
+    default: "5s"
+    source: yaml
+  db_dsn:
+    type: string
+    default: "host=localhost user=zdravoshag password=zdravoshag_secret dbname=zdravoshag search_path=core_users sslmode=disable"
+    source: yaml
+  redis_addr:
+    type: string
+    default: "localhost:6379"
+    source: yaml
+  redis_password:
+    type: string
+    default: ""
+    source: env
+  nats_url:
+    type: string
+    default: "nats://localhost:4222"
+    source: yaml
+  tracer_host:
+    type: string
+    default: "localhost"
+    source: yaml
+  tracer_port:
+    type: string
+    default: "4317"
+    source: yaml
+  service_name:
+    type: string
+    default: "core-users"
+    source: yaml
+  jwt_secret:
+    type: string
+    default: "change-me"
+    source: env
+  auth_key_ttl:
+    type: duration
+    default: "300s"
+    source: yaml
+  token_ttl:
+    type: duration
+    default: "24h"
+    source: yaml
