@@ -119,7 +119,6 @@ func (s *AuthService) VerifyPhone(ctx context.Context, phoneE164 string, provisi
 
 	if authKey != "" {
 		s.publishAuthToken(authKey, token, userID.String())
-		// Also store in Redis for polling clients; expires after the key TTL.
 		_ = s.rdb.Set(ctx, authTokenPrefix+authKey, token+"|"+userID.String(), s.keyTTL).Err()
 		_ = s.rdb.Del(ctx, authKeyPrefix+authKey).Err()
 	}
@@ -127,8 +126,6 @@ func (s *AuthService) VerifyPhone(ctx context.Context, phoneE164 string, provisi
 	return userID, token, initialPassword, isNew, nil
 }
 
-// CheckAuthToken returns the JWT token if the browser challenge has been completed.
-// The entry is consumed (deleted) on first read.
 func (s *AuthService) CheckAuthToken(ctx context.Context, key string) (token, userID string, err error) {
 	val, redisErr := s.rdb.GetDel(ctx, authTokenPrefix+key).Result()
 	if redisErr == redis.Nil {
@@ -137,12 +134,10 @@ func (s *AuthService) CheckAuthToken(ctx context.Context, key string) (token, us
 	if redisErr != nil {
 		return "", "", fmt.Errorf("redis get auth token: %w", redisErr)
 	}
-	// val = "token|userID"
 	parts := splitOnce(val, "|")
 	return parts[0], parts[1], nil
 }
 
-// LoginWithPassword verifies a phone+password combination and returns a JWT.
 func (s *AuthService) LoginWithPassword(ctx context.Context, phoneE164, password string) (userID uuid.UUID, token string, err error) {
 	u, err := s.repo.GetUserByPhone(ctx, phoneE164)
 	if err != nil || u == nil {
@@ -171,7 +166,6 @@ func (s *AuthService) LoginWithPassword(ctx context.Context, phoneE164, password
 	return u.ID, token, nil
 }
 
-// ChangePassword sets a new bcrypt password for the user.
 func (s *AuthService) ChangePassword(ctx context.Context, userID uuid.UUID, newPassword string) error {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
 	if err != nil {

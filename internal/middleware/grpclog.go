@@ -11,7 +11,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// GRPCUnaryAccessLog logs unary gRPC: request/response JSON (capped) and errors; trace_id on context.
 func GRPCUnaryAccessLog() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, h grpc.UnaryHandler) (any, error) {
 		ctx = obs.WithTrace(ctx)
