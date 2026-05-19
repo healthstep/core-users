@@ -140,6 +140,9 @@ func (s *UserServer) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) 
 	if req.OnboardingCompleted != nil {
 		updates["onboarding_completed"] = *req.OnboardingCompleted
 	}
+	if req.Advanced != nil {
+		updates["advanced"] = *req.Advanced
+	}
 	u, err := s.userSvc.UpdateUser(ctx, uid, updates)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, fmt.Sprintf("update user: %v", err))
@@ -180,8 +183,9 @@ func modelUserToProto(u *model.User) *pb.UserResponse {
 		Timezone:    u.Timezone,
 		DisplayName: u.DisplayName,
 		BirthDate:   u.BirthDate,
-		Sex:         u.Sex,
-		IsAdmin:     u.IsAdmin,
+		Sex:      u.Sex,
+		IsAdmin:  u.IsAdmin,
+		Advanced: u.Advanced,
 	}
 	if u.PhoneVerifiedAt != nil {
 		resp.PhoneVerifiedAt = timestamppb.New(*u.PhoneVerifiedAt)

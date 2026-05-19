@@ -96,6 +96,7 @@ message UpdateUserRequest {
   optional string birth_date = 5;
   optional string sex = 6;
   optional bool onboarding_completed = 7;
+  optional bool advanced = 8;
 }
 
 message UserResponse {
@@ -111,6 +112,7 @@ message UserResponse {
   string birth_date = 10;
   string sex = 11;
   bool is_admin = 12;
+  bool advanced = 13;
 }
 
 message ValidateTokenRequest {
