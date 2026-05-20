@@ -44,6 +44,9 @@ func (s *UserService) UpdateUser(ctx context.Context, id uuid.UUID, updates map[
 	if v, ok := updates["sex"]; ok {
 		u.Sex = v.(string)
 	}
+	if v, ok := updates["advanced"]; ok {
+		u.Advanced = v.(bool)
+	}
 	if v, ok := updates["onboarding_completed"]; ok && v.(bool) {
 		now := time.Now()
 		u.OnboardingCompletedAt = &now
